@@ -1,0 +1,42 @@
+version: "3"
+
+services:
+  consumer:
+    build: .
+    command: "python3 main.py"
+    ports:
+      - 8000:8000
+    links:
+      - redis
+    networks:
+      - api_consumer
+    restart: always
+    volumes:
+      - .:/app
+
+  celery:
+    build: .
+    command: "celery -A main.celery worker --loglevel=info"
+    restart: always
+    volumes:
+      - .:/app
+    networks:
+      - api_consumer
+
+  celery-beat:
+    build: .
+    command: "celery -A main.celery beat --loglevel=info"
+    networks:
+      - api_consumer
+    volumes:
+      - .:/app
+
+
+  redis:
+    image: redis:alpine
+    networks:
+      - api_consumer
+
+networks:
+  api_consumer:
+
