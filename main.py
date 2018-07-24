@@ -1,6 +1,7 @@
 from app import flask_app
 from app import redis_store
 from flask import jsonify
+import redis
 import json
 import managers
 
@@ -16,9 +17,10 @@ try:
     p = redis_store.pubsub(ignore_subscribe_messages=True)
     p.subscribe(managers.REDIS_PUBSUB_CHANNEL)
     redis_ready = True
-except:
+except redis.exceptions.ConnectionError as e:
     redis_ready = False
     print("redis failed to ping!")
+    print(e)
 
 
 @flask_app.route('/')
