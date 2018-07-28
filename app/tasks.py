@@ -1,14 +1,12 @@
 from app import celery
-import managers
-import handlers
-
-# In case you assign a custom API consumer
-if managers.api_consumer_config.USE_CUSTOM_API_CONSUMER:
-    api_consumer = handlers.api_consumer
-else:
-    api_consumer = handlers.default_api_consumer
+from app import redis_store
+from managers import api_consumer_config
 
 
 @celery.task()
 def api_response_consumer():
-    return api_consumer()
+    # Replace with your favorite API call and publish the output...
+    print("Hello World!!!")
+    redis_store.publish(
+        api_consumer_config.REDIS_PUBSUB_CHANNEL, ["Hello World!"]
+    )
